@@ -56,3 +56,42 @@ void updateParticle(Particle *p, int w, int h)
         p->velocity.y *= -1;
     }
 }
+
+bool checkCollision(Particle *p1, Particle *p2)
+{
+    float dx = p2->pos.x - p1->pos.x;
+    float dy = p2->pos.y - p1->pos.y;
+    float radii = p1->rad + p2->rad;
+
+    return (dx * dx + dy * dy) <= (radii * radii);
+}
+
+void handleCollision(Particle* p1, Particle* p2)
+{
+    float dx = p1->pos.x - p2->pos.x;
+    float dy = p1->pos.y - p2->pos.y;
+
+    float distSq = dx*dx + dy*dy;
+    float radii = p1->rad + p2->rad;
+
+    if (distSq == 0.0f)
+    {
+        dx = 1.0f;
+        dy = 0.0f;
+        distSq = 1.0f;
+    }
+
+    float dist = sqrt(distSq);
+    float overlap = radii - dist;
+
+    float nx = dx / dist;
+    float ny = dy / dist;
+
+    float correction = overlap * 0.5f;
+
+    p1->pos.x += nx * correction;
+    p1->pos.y += ny * correction;
+
+    p2->pos.x -= nx * correction;
+    p2->pos.y -= ny * correction;
+}

@@ -8,13 +8,14 @@
 #define WIDTH 900
 #define HEIGHT 600
 
-#define NUM_PARTICLES 15
+#define NUM_PARTICLES 35
 
 void initParticles();
 void updateParticles();
 void drawParticles();
 void cleanUp();
 int getRand();
+void checkCollisions();
 
 Particle *particles[NUM_PARTICLES];
 SDL_Window *window;
@@ -61,6 +62,7 @@ int main()
             }
         }
         updateParticles();
+        checkCollisions();
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -80,7 +82,7 @@ void initParticles()
     for (int i = 0; i < NUM_PARTICLES; i++)
     {
         int r = getRand(5, 15);
-        Particle *p = createParticle((Vector2){ getRand(r, WIDTH - r), getRand(r, HEIGHT - r) }, (Vector2){5, 4}, r);
+        Particle *p = createParticle((Vector2){ getRand(r, WIDTH - r), getRand(r, HEIGHT - r) }, (Vector2){getRand(-5, 5), getRand(-5, 5)}, r);
         particles[i] = p;
     }
 }
@@ -112,4 +114,18 @@ void cleanUp()
 int getRand(int min, int max)
 {
     return rand() % (max - min + 1) + min;
+}
+
+void checkCollisions()
+{
+    for (int i = 0; i < NUM_PARTICLES; i++)
+    {
+        for (int j = i + 1; j < NUM_PARTICLES; j++)
+        {
+            if (checkCollision(particles[i], particles[j]))
+            {
+                handleCollision(particles[i], particles[j]);
+            }
+        }
+    }
 }

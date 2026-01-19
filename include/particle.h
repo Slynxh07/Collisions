@@ -3,6 +3,7 @@
 
 #include "seanMath.h"
 #include "SDL2/SDL.h"
+#include <stdbool.h>
 
 typedef struct Particle Particle;
 
@@ -11,6 +12,8 @@ void destroyParticle(Particle *p);
 
 void updateParticle(Particle *p, int w, int h);
 void drawParticle(SDL_Renderer *renderer, Particle *p);
+bool checkCollision(Particle *p1, Particle *p2);
+void handleCollision(Particle *p1, Particle *p2);
 
 
 #endif
