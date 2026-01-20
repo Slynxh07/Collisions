@@ -113,7 +113,10 @@ void cleanUp()
 
 int getRand(int min, int max)
 {
-    return rand() % (max - min + 1) + min;
+    int randNum;
+    randNum = rand() % (max - min + 1) + min;
+    if (randNum == 0) randNum = getRand(min, max);
+    return randNum;
 }
 
 void checkCollisions()

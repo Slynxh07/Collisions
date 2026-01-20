@@ -59,39 +59,60 @@ void updateParticle(Particle *p, int w, int h)
 
 bool checkCollision(Particle *p1, Particle *p2)
 {
-    float dx = p2->pos.x - p1->pos.x;
-    float dy = p2->pos.y - p1->pos.y;
+    Vector2 distVec;
+    distVec.x = p2->pos.x - p1->pos.x;
+    distVec.y = p2->pos.y - p1->pos.y;
     float radii = p1->rad + p2->rad;
 
-    return (dx * dx + dy * dy) <= (radii * radii);
+    return (distVec.x * distVec.x + distVec.y * distVec.y) <= (radii * radii);
 }
 
 void handleCollision(Particle* p1, Particle* p2)
 {
-    float dx = p1->pos.x - p2->pos.x;
-    float dy = p1->pos.y - p2->pos.y;
+    Vector2 distVec, nDistVec, nTangentVec;
+    distVec.x = p1->pos.x - p2->pos.x;
+    distVec.y = p1->pos.y - p2->pos.y;
 
-    float distSq = dx*dx + dy*dy;
+    float distSq = distVec.x * distVec.x + distVec.y * distVec.y;
     float radii = p1->rad + p2->rad;
 
     if (distSq == 0.0f)
     {
-        dx = 1.0f;
-        dy = 0.0f;
+        distVec.x = 1.0f;
+        distVec.y = 0.0f;
         distSq = 1.0f;
     }
 
-    float dist = sqrt(distSq);
-    float overlap = radii - dist;
+    float distMag = sqrt(distSq);
+    float overlap = radii - distMag;
 
-    float nx = dx / dist;
-    float ny = dy / dist;
+    nDistVec.x = distVec.x / distMag;
+    nDistVec.y = distVec.y / distMag;
 
     float correction = overlap * 0.5f;
 
-    p1->pos.x += nx * correction;
-    p1->pos.y += ny * correction;
+    p1->pos.x += nDistVec.x * correction;
+    p1->pos.y += nDistVec.y * correction;
 
-    p2->pos.x -= nx * correction;
-    p2->pos.y -= ny * correction;
+    p2->pos.x -= nDistVec.x * correction;
+    p2->pos.y -= nDistVec.y * correction;
+
+    nTangentVec.x = -nDistVec.y;
+    nTangentVec.y = nDistVec.x;
+
+    float v1n, v1t, v2n, v2t;
+    v1n = p1->velocity.x * nDistVec.x + p1->velocity.y * nDistVec.y;
+    v1t = p1->velocity.x * nTangentVec.x + p1->velocity.y * nTangentVec.y;
+
+    v2n = p2->velocity.x * nDistVec.x + p2->velocity.y * nDistVec.y;
+    v2t = p2->velocity.x * nTangentVec.x + p2->velocity.y * nTangentVec.y;
+
+    Vector2 v1 = {v2n, v1t};
+    Vector2 v2 = {v1n, v2t};
+
+    p1->velocity.x = v1.x * nDistVec.x + v1.y * nTangentVec.x;
+    p1->velocity.y = v1.x * nDistVec.y + v1.y * nTangentVec.y;
+
+    p2->velocity.x = v2.x * nDistVec.x + v2.y * nTangentVec.x;
+    p2->velocity.y = v2.x * nDistVec.y + v2.y * nTangentVec.y;
 }
