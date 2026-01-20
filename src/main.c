@@ -14,7 +14,7 @@ void initParticles();
 void updateParticles();
 void drawParticles();
 void cleanUp();
-int getRand();
+int getRand(int min, int max);
 void checkCollisions();
 
 Particle *particles[NUM_PARTICLES];
