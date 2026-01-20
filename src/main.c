@@ -121,7 +121,7 @@ int getRand(int min, int max)
 
 void checkCollisions()
 {
-    for (int i = 0; i < NUM_PARTICLES; i++)
+    for (int i = 0; i < NUM_PARTICLES - 1; i++)
     {
         for (int j = i + 1; j < NUM_PARTICLES; j++)
         {
